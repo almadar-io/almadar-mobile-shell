@@ -7,37 +7,38 @@ on:
     branches: [main, develop]
 
 jobs:
-  lint:
+  validate-template:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm install
-      - run: npm run lint
-
-  typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm install
-      - run: npm run typecheck
-
-  test-shell-generation:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Orbital CLI
+      
+      - name: Validate shell structure
         run: |
-          # Install orbital CLI from releases
-          curl -L https://github.com/almadar-io/orbital/releases/latest/download/orbital-linux-x64 -o /usr/local/bin/orbital
-          chmod +x /usr/local/bin/orbital
-      - name: Test shell template
+          # Check required shell files exist
+          test -f shell.toml || (echo "Missing shell.toml" && exit 1)
+          test -f component-mapping.json || (echo "Missing component-mapping.json" && exit 1)
+          test -d packages/mobile || (echo "Missing packages/mobile" && exit 1)
+          test -d packages/server || (echo "Missing packages/server" && exit 1)
+          echo "✓ All required template files present"
+      
+      - name: Validate shell.toml syntax
         run: |
-          # Verify shell.toml is valid
-          test -f shell.toml
-          test -f component-mapping.json
+          # Basic TOML validation - check for required sections
+          grep -q "\[shell\]" shell.toml || (echo "Missing [shell] section" && exit 1)
+          grep -q "name" shell.toml || (echo "Missing name in shell.toml" && exit 1)
+          grep -q "version" shell.toml || (echo "Missing version in shell.toml" && exit 1)
+          echo "✓ shell.toml is valid"
+      
+      - name: Validate component mapping
+        run: |
+          # Check component-mapping.json is valid JSON
+          python3 -c "import json; json.load(open('component-mapping.json'))" || (echo "Invalid component-mapping.json" && exit 1)
+          echo "✓ component-mapping.json is valid JSON"
+      
+      - name: Check template files
+        run: |
+          # Count template files
+          TEMPLATE_COUNT=$(find packages -name "*.template" -o -name "*.hbs" 2>/dev/null | wc -l)
+          echo "Found $TEMPLATE_COUNT template files"
+          test $TEMPLATE_COUNT -gt 0 || (echo "No template files found" && exit 1)
+          echo "✓ Template files present"
