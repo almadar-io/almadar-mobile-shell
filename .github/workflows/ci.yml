@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+
+  test-shell-generation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Orbital CLI
+        run: |
+          # Install orbital CLI from releases
+          curl -L https://github.com/almadar-io/orbital/releases/latest/download/orbital-linux-x64 -o /usr/local/bin/orbital
+          chmod +x /usr/local/bin/orbital
+      - name: Test shell template
+        run: |
+          # Verify shell.toml is valid
+          test -f shell.toml
+          test -f component-mapping.json

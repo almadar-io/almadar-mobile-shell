@@ -1,0 +1,18 @@
+{
+  "entity-table": "@almadar/mobile/components/organisms/EntityList",
+  "entity-list": "@almadar/mobile/components/organisms/EntityList",
+  "form-section": "@almadar/mobile/components/organisms/FormSection",
+  "page-header": "@almadar/mobile/components/templates/PageHeader",
+  "card-grid": "@almadar/mobile/components/organisms/CardGrid",
+  "detail-panel": "@almadar/mobile/components/organisms/DetailPanel",
+  "loading-state": "@almadar/mobile/components/molecules/LoadingState",
+  "error-state": "@almadar/mobile/components/molecules/ErrorState",
+  "empty-state": "@almadar/mobile/components/molecules/EmptyState",
+  "button": "@almadar/mobile/components/atoms/Button",
+  "input": "@almadar/mobile/components/atoms/Input",
+  "card": "@almadar/mobile/components/atoms/Card",
+  "badge": "@almadar/mobile/components/atoms/Badge",
+  "icon": "@almadar/mobile/components/atoms/Icon",
+  "typography": "@almadar/mobile/components/atoms/Typography",
+  "stack": "@almadar/mobile/components/atoms/Stack"
+}

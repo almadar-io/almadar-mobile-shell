@@ -1,0 +1,24 @@
+{
+  "name": "@almadar/mobile-shell",
+  "version": "1.0.0",
+  "private": true,
+  "description": "React Native mobile shell template for Almadar",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,mobile -c blue,green \"npm run dev -w packages/server\" \"npm run dev -w packages/mobile\"",
+    "android": "npm run android -w packages/mobile",
+    "ios": "npm run ios -w packages/mobile",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "eslint packages/"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "turbo": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
