@@ -1,6 +1,6 @@
 {
   "name": "@almadar/mobile-shell",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "description": "React Native mobile shell template for Almadar",
   "workspaces": [
