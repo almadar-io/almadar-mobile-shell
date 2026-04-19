@@ -12,7 +12,8 @@
     "ios": "npm run ios -w packages/mobile",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
-    "lint": "eslint packages/"
+    "lint": "eslint packages/",
+    "reinstall": "rm -rf node_modules packages/*/node_modules && npm install"
   },
   "devDependencies": {
     "concurrently": "^8.2.0",

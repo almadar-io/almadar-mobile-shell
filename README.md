@@ -2,6 +2,20 @@
 
 React Native mobile shell template for Almadar compiler.
 
+## Install
+
+```bash
+npm install
+```
+
+If `npm install` crashes with `TypeError: Cannot read properties of null (reading 'matches')` from `@npmcli/arborist`, nested `node_modules/` directories from a previous pnpm install are confusing npm's workspace linker. Clear them and retry:
+
+```bash
+npm run reinstall
+```
+
+Equivalent to `rm -rf node_modules packages/*/node_modules && npm install`.
+
 ## Overview
 
 This is a shell template that the `orbital` compiler uses to generate React Native mobile applications from `.orb` schema files.
