@@ -3,7 +3,14 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@app/shared": ["../shared/src/index.ts"],
+      "@app/shared/*": ["../shared/src/*"],
+      "@almadar/core": ["./node_modules/@almadar/core"],
+      "@almadar/core/*": ["./node_modules/@almadar/core/*"]
+    }
   },
   "include": ["src/**/*", "index.js"]
 }
