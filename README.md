@@ -1,82 +1,57 @@
 # @almadar/mobile-shell
 
-React Native mobile shell template for Almadar compiler.
+React Native mobile client template plus a verbatim TypeScript server template for the Almadar compiler.
 
-## Install
+## What it is
 
-```bash
-npm install
-```
+- `packages/mobile/` — React Native client template. The compiler generates screens, hooks, and a navigator into `packages/mobile/src/generated/`.
+- `packages/server/` — TypeScript server template copied verbatim from `@almadar/shell-server` / `almadar-shell`. The mobile shell does **not** generate server code from the `.orb` schema; it reuses the static backend template.
+- `packages/shared/` — Shared type definitions, including `entities.ts` generated from the `.orb` schema.
 
-If `npm install` crashes with `TypeError: Cannot read properties of null (reading 'matches')` from `@npmcli/arborist`, nested `node_modules/` directories from a previous pnpm install are confusing npm's workspace linker. Clear them and retry:
+## Compile
 
-```bash
-npm run reinstall
-```
-
-Equivalent to `rm -rf node_modules packages/*/node_modules && npm install`.
-
-## Overview
-
-This is a shell template that the `orbital` compiler uses to generate React Native mobile applications from `.orb` schema files.
-
-## Structure
-
-```
-├── packages/
-│   ├── mobile/          # React Native client template
-│   ├── server/          # Express server (copied from almadar-shell)
-│   └── shared/          # Shared types
-├── component-mapping.json  # Pattern → Component mapping
-└── shell.toml             # Shell manifest
-```
-
-## Usage with Compiler
+Single output with the static TypeScript server template:
 
 ```bash
-orbital compile app.orb --shell mobile -o ./output
+orb compile app.orb --shell mobile -o ./output
 ```
 
-This generates:
+Separate frontend and backend outputs:
+
+```bash
+orb compile app.orb --frontend mobile --backend typescript -o ./output
+```
+
+## Generated output
+
 ```
 ./output/
 ├── packages/
-│   ├── mobile/src/generated/   # Generated pages, traits
-│   ├── server/                 # Server (identical to web)
-│   └── shared/                 # Shared types
+│   ├── mobile/src/generated/
+│   │   ├── screens/*.tsx              # One screen per orbital page
+│   │   ├── hooks/use*.ts              # Generated React hooks
+│   │   └── GeneratedNavigator.tsx     # Stack/tab navigator wiring
+│   ├── shared/src/types/entities.ts   # Entity types from the schema
+│   └── server/                        # Verbatim TypeScript server template
+├── component-mapping.json
+└── shell.toml
 ```
 
-## Component Mapping
-
-Patterns are mapped to React Native components:
-
-| Pattern | Component |
-|---------|-----------|
-| `entity-table` | `@almadar/mobile/components/organisms/DataTable` |
-| `entity-list` | `@almadar/mobile/components/molecules/DataList` |
-| `form-section` | `@almadar/mobile/components/organisms/FormSection` |
-| `button` | `@almadar/mobile/components/atoms/Button` |
-
-## Server
-
-The server is identical to the web shell's server. It handles:
-- State machine execution
-- API routes (`/api/orbitals/:name/events`)
-- Persistence
-
-## Development
+## Run the generated app
 
 ```bash
-# Start both server and mobile
-npm run dev
-
-# Start only mobile
-npm run ios
-npm run android
-
-# Lint
-npm run lint
+cd output
+pnpm install
+pnpm -F @almadar/mobile-shell-client typecheck
+pnpm -F @almadar/shell-server typecheck
+pnpm -F @almadar/mobile-shell-client start
 ```
+
+## Notes
+
+- The server is the TypeScript backend verbatim; the mobile backend does not generate server code.
+- The generated client currently produces static screen scaffolding and type definitions. Full effect lowering and a runtime interpreter for mobile are not implemented yet.
+- React 19 / React Native 0.76 peer-dependency warnings may affect runtime; track the upstream React Native upgrade.
 
 ## License
 

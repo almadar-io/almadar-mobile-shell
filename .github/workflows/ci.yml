@@ -11,33 +11,60 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Validate shell structure
         run: |
-          # Check required shell files exist
           test -f shell.toml || (echo "Missing shell.toml" && exit 1)
           test -f component-mapping.json || (echo "Missing component-mapping.json" && exit 1)
           test -d packages/mobile || (echo "Missing packages/mobile" && exit 1)
           test -d packages/server || (echo "Missing packages/server" && exit 1)
+          test -d packages/shared || (echo "Missing packages/shared" && exit 1)
           echo "✓ All required template files present"
-      
-      - name: Validate shell.toml syntax
+
+      - name: Validate config syntax
         run: |
-          # Basic TOML validation - check for required sections
-          grep -q "\[shell\]" shell.toml || (echo "Missing [shell] section" && exit 1)
-          grep -q "name" shell.toml || (echo "Missing name in shell.toml" && exit 1)
-          grep -q "version" shell.toml || (echo "Missing version in shell.toml" && exit 1)
-          echo "✓ shell.toml is valid"
-      
-      - name: Validate component mapping
+          python3 -c "import json; json.load(open('component-mapping.json'))"
+          python3 -c "import tomllib; tomllib.load(open('shell.toml', 'rb'))"
+          echo "✓ component-mapping.json and shell.toml are valid"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Typecheck mobile client
+        run: pnpm -F @almadar/mobile-shell-client typecheck
+
+      - name: Typecheck server
+        run: pnpm -F @almadar/shell-server typecheck
+
+      - name: Check component mapping resolves
         run: |
-          # Check component-mapping.json is valid JSON
-          python3 -c "import json; json.load(open('component-mapping.json'))" || (echo "Invalid component-mapping.json" && exit 1)
-          echo "✓ component-mapping.json is valid JSON"
-      
-      - name: Check source files
-        run: |
-          # Check that mobile and server packages have source files
-          test -d packages/mobile/src || (echo "Missing packages/mobile/src" && exit 1)
-          test -d packages/server/src || (echo "Missing packages/server/src" && exit 1)
-          echo "✓ Source directories present"
+          node - <<'EOF'
+          const mapping = require('./component-mapping.json');
+          const fs = require('fs');
+          const path = require('path');
+          let errors = 0;
+          for (const [pattern, importPath] of Object.entries(mapping)) {
+            const parts = importPath.split('/');
+            const componentName = parts[parts.length - 1];
+            const pkg = parts.slice(0, -1).join('/');
+            // Check the package subpath export exists in @almadar/mobile package.json
+            const mobilePkg = require('./packages/mobile/node_modules/@almadar/mobile/package.json');
+            if (!mobilePkg.exports[pkg]) {
+              console.error(`❌ ${pattern}: missing export ${pkg}`);
+              errors++;
+              continue;
+            }
+            console.log(`✓ ${pattern} -> ${pkg} { ${componentName} }`);
+          }
+          process.exit(errors ? 1 : 0);
+          EOF
