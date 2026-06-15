@@ -8,10 +8,6 @@ import {
 } from '@almadar/mobile/providers';
 import { AppNavigator } from './navigation/AppNavigator';
 
-// {{GENERATED_SCHEMA_IMPORT}}
-// Compiler replaces this with: import schema from './generated/schema.json';
-const schema = { orbitals: [] }; // Placeholder
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -28,7 +24,7 @@ export default function App() {
         <ThemeProvider>
           <EventBusProvider>
             <NavigationContainer>
-              <AppNavigator schema={schema} />
+              <AppNavigator />
             </NavigationContainer>
           </EventBusProvider>
         </ThemeProvider>

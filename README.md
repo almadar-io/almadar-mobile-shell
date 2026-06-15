@@ -52,7 +52,8 @@ Patterns are mapped to React Native components:
 
 | Pattern | Component |
 |---------|-----------|
-| `entity-table` | `@almadar/mobile/components/organisms/EntityList` |
+| `entity-table` | `@almadar/mobile/components/organisms/DataTable` |
+| `entity-list` | `@almadar/mobile/components/molecules/DataList` |
 | `form-section` | `@almadar/mobile/components/organisms/FormSection` |
 | `button` | `@almadar/mobile/components/atoms/Button` |
 

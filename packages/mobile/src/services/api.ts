@@ -1,4 +1,24 @@
+import type { EventPayload } from '@almadar/core';
+
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+
+export interface OrbitalEventResponse {
+  success: boolean;
+  transitioned: boolean;
+  states: Record<string, string>;
+  emittedEvents: Array<{ event: string; payload?: EventPayload; source?: unknown }>;
+  clientEffects?: unknown[];
+  clientEffectsByTrait?: Array<{ traitName: string; effect: unknown }>;
+  effectResults?: Array<{
+    effect: 'persist' | 'call-service' | 'set' | 'ref' | 'deref' | 'swap' | 'atomic';
+    action?: string;
+    entityType?: string;
+    data?: unknown;
+    success: boolean;
+    error?: string;
+  }>;
+  error?: string;
+}
 
 export interface ApiResponse<T> {
   data?: T;
@@ -32,12 +52,18 @@ export const api = {
     }
   },
 
-  // Orbital event API
-  async sendEvent(orbital: string, event: string, payload?: unknown, entityId?: string) {
-    return this.post(`/orbitals/${orbital}/events`, {
+  async sendEvent(
+    orbital: string,
+    event: string,
+    payload?: EventPayload,
+    entityId?: string,
+    user?: { uid: string; email?: string; displayName?: string },
+  ): Promise<ApiResponse<OrbitalEventResponse>> {
+    return this.post<OrbitalEventResponse>(`/${orbital}/events`, {
       event,
       payload,
       entityId,
+      user,
     });
   },
 };
