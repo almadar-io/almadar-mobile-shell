@@ -56,7 +56,10 @@ jobs:
           for (const [pattern, importPath] of Object.entries(mapping)) {
             const parts = importPath.split('/');
             const componentName = parts[parts.length - 1];
-            const pkg = parts.slice(0, -1).join('/');
+            // importPath is like "@almadar/mobile/components/molecules/Accordion"
+            // strip the scoped package prefix (@almadar/mobile = first 2 segments) and the trailing component name
+            const subpath = parts.slice(2, -1).join('/');
+            const pkg = './' + subpath;
             // Check the package subpath export exists in @almadar/mobile package.json
             const mobilePkg = require('./packages/mobile/node_modules/@almadar/mobile/package.json');
             if (!mobilePkg.exports[pkg]) {

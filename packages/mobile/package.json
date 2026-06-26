@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@almadar/core": "^10.0.0",
-    "@almadar/mobile": "^1.2.6",
+    "@almadar/mobile": "^1.4.0",
     "@almadar/patterns": "^2.41.0",
     "@react-navigation/bottom-tabs": "^6.5.0",
     "@react-navigation/native": "^6.1.0",
